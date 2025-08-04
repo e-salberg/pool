@@ -22,5 +22,6 @@ if (NOT raylib_FOUND)
   endif()
 endif()
 
+add_subdirectory(lib)
 add_executable(pool main.c)
-target_link_libraries(pool raylib)
+target_link_libraries(pool PUBLIC lib raylib)
