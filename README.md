@@ -10,8 +10,10 @@ another useful video - [](https://www.youtube.com/watch?v=guWIF87CmBg)
 TODO:
 * add pockets/create a table
 * add max power and scale distance dragged back when hitting q ball
+* make collision not prefectly inelastic/resitution ball to bump .5? ball to ball .9
 * add ui and menu options
 * add sound
+* randomize balls starting positon in triangle
 * add cpu?
 * add 2nd player? local/online?
 * change math to be in m/s and have drawing map to pixels

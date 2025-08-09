@@ -1,5 +1,6 @@
 #include "physics.h"
 #include <math.h>
+#include <raylib.h>
 
 float sqr(float x) { return x * x; }
 
@@ -54,13 +55,20 @@ void handleBallToBallCollision(Ball *b1, Ball *b2) {
 }
 
 void handleBallToWallCollision(Ball *b) {
-  if (b->position.x >= (GetScreenWidth() - b->radius) ||
-      b->position.x <= b->radius) {
-    b->velocity.x *= (-1.0f * RESTITUTION_BALL_WALL);
+  if (b->position.x >= GetScreenWidth() - b->radius) {
+    b->position.x = GetScreenWidth() - b->radius;
+    b->velocity.x *= -RESTITUTION_BALL_WALL;
+  } else if (b->position.x <= b->radius) {
+    b->position.x = b->radius;
+    b->velocity.x *= -RESTITUTION_BALL_WALL;
   }
-  if (b->position.y >= (GetScreenHeight() - b->radius) ||
-      b->position.y <= b->radius) {
-    b->velocity.y *= (-1.0f * RESTITUTION_BALL_WALL);
+
+  if (b->position.y >= GetScreenHeight() - b->radius) {
+    b->position.y = GetScreenHeight() - b->radius;
+    b->velocity.y *= -RESTITUTION_BALL_WALL;
+  } else if (b->position.y <= b->radius) {
+    b->position.y = b->radius;
+    b->velocity.y *= -RESTITUTION_BALL_WALL;
   }
 }
 

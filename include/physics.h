@@ -3,9 +3,9 @@
 #include <raylib.h>
 #include <stdbool.h>
 
-#define RESTITUTION_BALL_BALL 1
-#define RESTITUTION_BALL_WALL 1
-#define ROLLING_RESISTANCE 15.0f // if m/s this should be .01?
+#define RESTITUTION_BALL_BALL .9f
+#define RESTITUTION_BALL_WALL .5f
+#define ROLLING_RESISTANCE 5.0f // if m/s this should be .01?
 #define GRAVITY 9.8f
 #define ERROR 5
 
