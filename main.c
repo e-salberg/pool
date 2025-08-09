@@ -11,13 +11,13 @@ static const int screenHeight = 960;
 typedef enum { Q, SOLID, STRIPE, EIGHT } BALL_TYPE;
 
 static Ball physics[MAX_BALLS] = {0};
+static bool onTable[MAX_BALLS];
 static BALL_TYPE types[MAX_BALLS] = {
     Q,     SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,  SOLID,
     EIGHT, STRIPE, STRIPE, STRIPE, STRIPE, STRIPE, STRIPE, STRIPE};
 static Color colors[MAX_BALLS] = {
     WHITE, YELLOW, BLUE, RED, PURPLE, ORANGE, GREEN, DARKBROWN,
     BLACK, YELLOW, BLUE, RED, PURPLE, ORANGE, GREEN, DARKBROWN};
-
 static int startingOrder[MAX_BALLS] = {0, 1,  11, 5, 2,  8,  10, 9,
                                        4, 14, 7,  6, 15, 13, 3,  12};
 
@@ -38,31 +38,59 @@ void update() {
   }
 
   for (int i = 0; i < MAX_BALLS; i++) {
+    if (!onTable[i]) {
+      continue;
+    }
     physics[i].position.x += physics[i].velocity.x * deltaTime;
     physics[i].position.y += physics[i].velocity.y * deltaTime;
   }
 
   for (int i = 0; i < MAX_BALLS; i++) {
+    if (!onTable[i]) {
+      continue;
+    }
     for (int j = i + 1; j < MAX_BALLS; j++) {
+      if (!onTable[j]) {
+        continue;
+      }
       if (hasCollided(physics[i], physics[j])) {
         handleBallToBallCollision(&physics[i], &physics[j]);
       }
     }
   }
 
+  bool canShootAgain = true;
   for (int i = 0; i < MAX_BALLS; i++) {
+    if (!onTable[i]) {
+      continue;
+    }
     handleBallToWallCollision(&physics[i]);
+    if (physics[i].velocity.x != 0 || physics[i].velocity.y != 0) {
+      accelerateBall(&physics[i], deltaTime);
+    }
+
+    if (physics[i].velocity.x != 0 || physics[i].velocity.y != 0) {
+      canShootAgain = false;
+    }
+  }
+
+  if (canShootAgain) {
+    hasqBallBeenHit = false;
   }
 }
 
 void draw() {
   BeginDrawing();
   ClearBackground(DARKGREEN);
-  /*DrawText(TextFormat("Q - x:%.0f, y:%.0f", qBall.velocity.x,
-  qBall.velocity.y), 10, 30, 20, WHITE); DrawText(TextFormat("RED - x:%.0f,
-  y:%.0f", redBall.velocity.x, redBall.velocity.y), 10, 10, 20, RED);*/
+  DrawText(TextFormat("Q - x:%.0f, y:%.0f", physics[0].velocity.x,
+                      physics[0].velocity.y),
+           10, 30, 20, WHITE);
 
   for (int i = 0; i < MAX_BALLS; i++) {
+    if (!onTable[i]) {
+      continue;
+    }
+
     switch (types[i]) {
     case Q:
     case EIGHT:
@@ -97,6 +125,7 @@ int main(void) {
     physics[i].velocity.y = 0.0f;
     physics[i].mass = BALL_MASS;
     physics[i].radius = BALL_RADIUS;
+    onTable[i] = true;
   }
 
   int COLS = 5;

@@ -63,3 +63,23 @@ void handleBallToWallCollision(Ball *b) {
     b->velocity.y *= (-1.0f * RESTITUTION_BALL_WALL);
   }
 }
+
+void accelerateBall(Ball *b, float deltaTime) {
+  float a = ROLLING_RESISTANCE * GRAVITY * deltaTime;
+  Vector2 direction = {.x = b->velocity.x, .y = b->velocity.y};
+  normalize(&direction);
+
+  float ax = direction.x * a;
+  if (fabs(b->velocity.x) <= fabs(a)) {
+    b->velocity.x = 0;
+  } else {
+    b->velocity.x -= ax;
+  }
+
+  float ay = direction.y * a;
+  if (fabs(b->velocity.y) <= fabs(a)) {
+    b->velocity.y = 0;
+  } else {
+    b->velocity.y -= ay;
+  }
+}
