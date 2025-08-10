@@ -22,19 +22,35 @@ static int startingOrder[MAX_BALLS] = {0, 1,  11, 5, 2,  8,  10, 9,
                                        4, 14, 7,  6, 15, 13, 3,  12};
 
 static float deltaTime = 0.0f;
-static bool hasqBallBeenHit = false;
+static bool canShoot = true;
+static bool hasScratched = false;
+static bool canPlaceQ = true;
 static Vector2 mousePosition = {0};
 
 void update() {
   deltaTime = GetFrameTime();
+  mousePosition = GetMousePosition();
 
-  if (!hasqBallBeenHit) {
-    mousePosition = GetMousePosition();
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-      hasqBallBeenHit = true;
-      physics[0].velocity.x = 3 * (physics[0].position.x - mousePosition.x);
-      physics[0].velocity.y = 3 * (physics[0].position.y - mousePosition.y);
+  if (hasScratched && canShoot) {
+    physics[0].position.x = mousePosition.x;
+    physics[0].position.y = mousePosition.y;
+
+    canPlaceQ = true;
+    for (int i = 1; i < MAX_BALLS; i++) {
+      if (hasCollided(physics[0], physics[i])) {
+        canPlaceQ = false;
+      }
     }
+    if (canPlaceQ && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+      hasScratched = false;
+    }
+    return;
+  }
+
+  if (canShoot && IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+    canShoot = false;
+    physics[0].velocity.x = 3 * (physics[0].position.x - mousePosition.x);
+    physics[0].velocity.y = 3 * (physics[0].position.y - mousePosition.y);
   }
 
   for (int i = 0; i < MAX_BALLS; i++) {
@@ -59,27 +75,26 @@ void update() {
     }
   }
 
-  bool canShootAgain = true;
+  bool allBallsStoppedMoving = true;
   for (int i = 0; i < MAX_BALLS; i++) {
     if (!onTable[i]) {
       continue;
     } else if (checkBallWentInPocket(physics[i])) {
       onTable[i] = false;
+      hasScratched = types[i] == Q;
       continue;
     }
 
     handleBallToWallCollision(&physics[i]);
     if (physics[i].velocity.x != 0 || physics[i].velocity.y != 0) {
+      allBallsStoppedMoving = false;
       accelerateBall(&physics[i], deltaTime);
-    }
-
-    if (physics[i].velocity.x != 0 || physics[i].velocity.y != 0) {
-      canShootAgain = false;
     }
   }
 
-  if (canShootAgain) {
-    hasqBallBeenHit = false;
+  if (allBallsStoppedMoving) {
+    canShoot = true;
+    onTable[0] = true;
   }
 }
 
@@ -91,8 +106,11 @@ void draw() {
                       physics[0].velocity.y),
            10, 30, 20, BLACK);
 
-  if (!hasqBallBeenHit) {
+  if (canShoot) {
     DrawText(TextFormat("PLAYER TURN"), 200, 40, 60, BLACK);
+  }
+  if (hasScratched && !canPlaceQ) {
+    DrawText(TextFormat("CAN'T PLACE Q HERE"), 200, 100, 60, RED);
   }
 
   for (int i = 0; i < MAX_BALLS; i++) {
