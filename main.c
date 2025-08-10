@@ -1,12 +1,12 @@
-#include "physics.h"
 #include "raylib.h"
+#include "table.h"
 
 #define MAX_BALLS 16
 #define BALL_MASS 10
 #define BALL_RADIUS 25
 
-static const int screenWidth = 1200;
-static const int screenHeight = 960;
+static const int screenWidth = SCREENWIDTH;
+static const int screenHeight = SCREENHEIGHT;
 
 typedef enum { Q, SOLID, STRIPE, EIGHT } BALL_TYPE;
 
@@ -63,7 +63,11 @@ void update() {
   for (int i = 0; i < MAX_BALLS; i++) {
     if (!onTable[i]) {
       continue;
+    } else if (checkBallWentInPocket(physics[i])) {
+      onTable[i] = false;
+      continue;
     }
+
     handleBallToWallCollision(&physics[i]);
     if (physics[i].velocity.x != 0 || physics[i].velocity.y != 0) {
       accelerateBall(&physics[i], deltaTime);
@@ -81,10 +85,15 @@ void update() {
 
 void draw() {
   BeginDrawing();
-  ClearBackground(DARKGREEN);
+  ClearBackground(WHITE);
+  DrawTable();
   DrawText(TextFormat("Q - x:%.0f, y:%.0f", physics[0].velocity.x,
                       physics[0].velocity.y),
-           10, 30, 20, WHITE);
+           10, 30, 20, BLACK);
+
+  if (!hasqBallBeenHit) {
+    DrawText(TextFormat("PLAYER TURN"), 200, 40, 60, BLACK);
+  }
 
   for (int i = 0; i < MAX_BALLS; i++) {
     if (!onTable[i]) {
@@ -119,6 +128,7 @@ int main(void) {
 
   InitWindow(screenWidth, screenHeight, "raylib window");
   SetTargetFPS(60);
+  InitTable();
 
   for (int i = 0; i < MAX_BALLS; i++) {
     physics[i].velocity.x = 0.0f;
@@ -135,7 +145,7 @@ int main(void) {
     for (int i = 0; i <= col; i++) {
       int ball = startingOrder[idx];
       physics[ball].position.x =
-          ((float)screenWidth / 2) + (col * 1.75 * BALL_RADIUS);
+          ((float)screenWidth * .6f) + (col * 1.75 * BALL_RADIUS);
       physics[ball].position.y = baseHeight + (i * 2 * BALL_RADIUS);
       idx++;
     }

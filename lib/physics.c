@@ -54,24 +54,6 @@ void handleBallToBallCollision(Ball *b1, Ball *b2) {
   b2->velocity.y += (direction.y * (v2final - v2));
 }
 
-void handleBallToWallCollision(Ball *b) {
-  if (b->position.x >= GetScreenWidth() - b->radius) {
-    b->position.x = GetScreenWidth() - b->radius;
-    b->velocity.x *= -RESTITUTION_BALL_WALL;
-  } else if (b->position.x <= b->radius) {
-    b->position.x = b->radius;
-    b->velocity.x *= -RESTITUTION_BALL_WALL;
-  }
-
-  if (b->position.y >= GetScreenHeight() - b->radius) {
-    b->position.y = GetScreenHeight() - b->radius;
-    b->velocity.y *= -RESTITUTION_BALL_WALL;
-  } else if (b->position.y <= b->radius) {
-    b->position.y = b->radius;
-    b->velocity.y *= -RESTITUTION_BALL_WALL;
-  }
-}
-
 void accelerateBall(Ball *b, float deltaTime) {
   float a = ROLLING_RESISTANCE * GRAVITY * deltaTime;
   Vector2 direction = {.x = b->velocity.x, .y = b->velocity.y};

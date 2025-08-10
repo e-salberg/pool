@@ -16,7 +16,8 @@ typedef struct {
   int radius;
 } Ball;
 
+float distance(Vector2 a, Vector2 b);
+
 bool hasCollided(Ball b1, Ball b2);
 void handleBallToBallCollision(Ball *b1, Ball *b2);
-void handleBallToWallCollision(Ball *b);
 void accelerateBall(Ball *b, float deltaTime);
