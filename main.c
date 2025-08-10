@@ -32,15 +32,55 @@ void update() {
   mousePosition = GetMousePosition();
 
   if (hasScratched && canShoot) {
-    physics[0].position.x = mousePosition.x;
-    physics[0].position.y = mousePosition.y;
+    Rectangle table = getTable();
+    Rectangle resetBox = {
+        .x = table.x,
+        .y = table.y,
+        .width = table.width / 3,
+        .height = table.height,
+    };
+
+    /*
+     * ball does not follow mouse when mouse is outside the reset zone
+    bool insideBoundsX =
+        mousePosition.x <= resetBox.x + resetBox.width - physics[0].radius &&
+        mousePosition.x >= resetBox.x + physics[0].radius;
+    bool insideBoundsY =
+        mousePosition.y <= resetBox.y + resetBox.height - physics[0].radius &&
+        mousePosition.y >= resetBox.y + physics[0].radius;
+    if (insideBoundsX && insideBoundsY) {
+      physics[0].position.x = mousePosition.x;
+      physics[0].position.y = mousePosition.y;
+    }
+    */
+    if (mousePosition.x > resetBox.x + resetBox.width - physics[0].radius) {
+      physics[0].position.x = resetBox.x + resetBox.width - physics[0].radius;
+    } else if (mousePosition.x < resetBox.x + physics[0].radius) {
+      physics[0].position.x = resetBox.x + physics[0].radius;
+    } else {
+      physics[0].position.x = mousePosition.x;
+    }
+
+    if (mousePosition.y > resetBox.y + resetBox.height - physics[0].radius) {
+      physics[0].position.y = resetBox.y + resetBox.height - physics[0].radius;
+    } else if (mousePosition.y < resetBox.y + physics[0].radius) {
+      physics[0].position.y = resetBox.y + physics[0].radius;
+    } else {
+      physics[0].position.y = mousePosition.y;
+    }
 
     canPlaceQ = true;
     for (int i = 1; i < MAX_BALLS; i++) {
       if (hasCollided(physics[0], physics[i])) {
+        // TODO - move ball so it's no longer colliding
+        // issue is with multiple balls close to each other
         canPlaceQ = false;
       }
     }
+    if (checkBallWentInPocket(physics[0])) {
+      canPlaceQ = false;
+    }
+
     if (canPlaceQ && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       hasScratched = false;
     }
@@ -82,6 +122,11 @@ void update() {
     } else if (checkBallWentInPocket(physics[i])) {
       onTable[i] = false;
       hasScratched = types[i] == Q;
+      if (hasScratched) {
+        Rectangle table = getTable();
+        physics[0].position.x = table.x + table.width / 6;
+        physics[0].position.y = table.y + table.height / 2;
+      }
       continue;
     }
 
@@ -100,7 +145,7 @@ void update() {
 
 void draw() {
   BeginDrawing();
-  ClearBackground(WHITE);
+  ClearBackground(DARKBLUE);
   DrawTable();
   DrawText(TextFormat("Q - x:%.0f, y:%.0f", physics[0].velocity.x,
                       physics[0].velocity.y),
@@ -145,7 +190,7 @@ void draw() {
 int main(void) {
 
   InitWindow(screenWidth, screenHeight, "raylib window");
-  SetTargetFPS(60);
+  SetTargetFPS(120);
   InitTable();
 
   for (int i = 0; i < MAX_BALLS; i++) {

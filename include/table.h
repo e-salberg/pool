@@ -13,6 +13,7 @@ typedef struct {
   float radius;
 } Circle;
 
+Rectangle getTable();
 void handleBallToWallCollision(Ball *b);
 bool checkBallWentInPocket(Ball b);
 void InitTable();

@@ -17,6 +17,8 @@ typedef struct {
 } Ball;
 
 float distance(Vector2 a, Vector2 b);
+float magnitude(Vector2 vec);
+void normalize(Vector2 *vec);
 
 bool hasCollided(Ball b1, Ball b2);
 void handleBallToBallCollision(Ball *b1, Ball *b2);

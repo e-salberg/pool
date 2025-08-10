@@ -14,6 +14,8 @@ static Rectangle table = {
 
 static Circle pockets[TOTAL_POCKETS];
 
+Rectangle getTable() { return table; }
+
 void InitTable() {
   // Top Left
   pockets[0].x = table.x;
