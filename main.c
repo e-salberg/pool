@@ -12,19 +12,23 @@ static GameScene currentScene = START;
 static const int screenWidth = SCREENWIDTH;
 static const int screenHeight = SCREENHEIGHT;
 static float deltaTime = 0.0f;
+static Vector2 mousePos = {0};
 
 void update() {
   deltaTime = GetFrameTime();
+  mousePos = GetMousePosition();
   switch (currentScene) {
   case START:
     UpdateStartScene();
     if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP)) {
       currentScene = MAINMENU;
+      InitMainMenu();
     }
     break;
   case MAINMENU:
     UpdateMainMenu();
-    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP)) {
+    if (CheckCollisionPointRec(mousePos, GetPracticeRec()) &&
+        (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))) {
       currentScene = PRACTICE;
       InitPracticeScene();
     }
