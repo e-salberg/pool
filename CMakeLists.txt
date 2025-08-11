@@ -3,12 +3,13 @@ project(pool C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(raylib_DIR "~/raylib")
 set(RAYLIB_VERSION 5.5)
+set(RAYGUI_VERSION 4.0)
+
 find_package(raylib ${RAYLIB_VERSION} QUIET)
 if (NOT raylib_FOUND)
-  message("Couldn't find local installed of raylib")
+  message("Couldn't find local install of raygui")
   include(FetchContent)
   FetchContent_Declare(
     raylib
@@ -22,6 +23,23 @@ if (NOT raylib_FOUND)
   endif()
 endif()
 
+find_package(raygui ${RAYGUI_VERSION} QUIET)
+if (NOT raygui_FOUND)
+  message("Couldn't find local install of raygui")
+  include(FetchContent)
+  FetchContent_Declare(
+    raygui
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raygui/archive/refs/tags/${RAYGUI_VERSION}.tar.gz
+  )
+  FetchContent_GetProperties(raygui)
+  if (NOT raygui_POPULATED) # Have we downloaded raylib yet?
+    set(FETCHCONTENT_QUIET NO)
+    FetchContent_MakeAvailable(raygui)
+  endif()
+endif()
+
 add_subdirectory(lib)
 add_executable(pool main.c)
 target_link_libraries(pool PUBLIC lib raylib)
+target_include_directories(pool PRIVATE ${raygui_SOURCE_DIR}/src)
