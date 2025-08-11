@@ -4,19 +4,19 @@
 #define POCKET_RADIUS 35
 #define TOTAL_POCKETS 6
 
-// TODO - change this to make sense
-static Rectangle table = {
-    .x = SCREENWIDTH / 10.0f,
-    .y = SCREENHEIGHT / 4.0f,
-    .width = TABLEWIDTH,
-    .height = TABLEHEIGHT,
-};
+static Rectangle table;
 
 static Circle pockets[TOTAL_POCKETS];
 
 Rectangle getTable() { return table; }
 
 void InitTable() {
+  // TODO - change this to make sense
+  table.x = GetScreenWidth() / 10.0f;
+  table.y = GetScreenHeight() / 4.0f;
+  table.width = TABLEWIDTH;
+  table.height = TABLEHEIGHT;
+
   // Top Left
   pockets[0].x = table.x;
   pockets[0].y = table.y;
