@@ -1,25 +1,8 @@
 #pragma one
 
 #include <raylib.h>
-#include <stdbool.h>
-
-#define RESTITUTION_BALL_BALL .9f
-#define RESTITUTION_BALL_WALL .5f
-#define ROLLING_RESISTANCE 5.0f // if m/s this should be .01?
-#define GRAVITY 9.8f
-#define ERROR 5
-
-typedef struct {
-  Vector2 position;
-  Vector2 velocity;
-  float mass;
-  int radius;
-} Ball;
 
 float distance(Vector2 a, Vector2 b);
 float magnitude(Vector2 vec);
-void normalize(Vector2 *vec);
-
-bool hasCollided(Ball b1, Ball b2);
-void handleBallToBallCollision(Ball *b1, Ball *b2);
-void accelerateBall(Ball *b, float deltaTime);
+Vector2 normalize(Vector2 vec);
+float dot_product(Vector2 a, Vector2 b);

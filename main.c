@@ -34,6 +34,9 @@ void update() {
     }
     break;
   case PRACTICE:
+    if (IsKeyPressed(KEY_R)) {
+      InitPracticeScene();
+    }
     UpdatePracticeScene(deltaTime);
     break;
   }

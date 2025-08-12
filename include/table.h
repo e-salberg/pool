@@ -1,4 +1,5 @@
 #pragma once
+#include "ball.h"
 #include "physics.h"
 
 // should be 2:1 ratio tournament 9ft table is 100in to 50in?
@@ -12,6 +13,7 @@ typedef struct {
 } Circle;
 
 Rectangle getTable();
+Vector2 ResetBallAfterScratch(Ball b);
 void handleBallToWallCollision(Ball *b);
 bool checkBallWentInPocket(Ball b);
 void InitTable();

@@ -8,7 +8,15 @@ static float buttonSegments = 0.0f;
 static float buttonLineThick = 1.0f;
 
 static Rectangle practiceButtonRec;
+static Color practiceButtonColor;
+static Color practiceButtonTextColor;
+
 static Rectangle twoPlayerButtonRec;
+static Color twoPlayerButtonColor;
+static Color twoPlayerButtonTextColor;
+
+static Color buttonColors[2] = {GRAY, LIGHTGRAY};
+static Color textColors[2] = {MAROON, RED};
 
 Rectangle GetPracticeRec() { return practiceButtonRec; }
 
@@ -27,19 +35,31 @@ void InitMainMenu() {
   twoPlayerButtonRec.height = buttonHeight;
 }
 
-void UpdateMainMenu() {}
+void UpdateMainMenu() {
+  Vector2 mousePos = GetMousePosition();
+
+  bool practiceButtonSelected =
+      CheckCollisionPointRec(mousePos, practiceButtonRec);
+  practiceButtonColor = buttonColors[practiceButtonSelected];
+  practiceButtonTextColor = textColors[practiceButtonSelected];
+
+  bool twoPlayerButtonSelected =
+      CheckCollisionPointRec(mousePos, twoPlayerButtonRec);
+  twoPlayerButtonColor = buttonColors[twoPlayerButtonSelected];
+  twoPlayerButtonTextColor = textColors[twoPlayerButtonSelected];
+}
 
 void DrawMainMenu() {
   DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), PURPLE);
   DrawText("Main Menu", 20, 20, 60, MAROON);
 
   DrawRectangleRounded(practiceButtonRec, buttonRoundness, buttonSegments,
-                       GRAY);
+                       practiceButtonColor);
   DrawText("Practice Mode", practiceButtonRec.x, practiceButtonRec.y, 60,
-           MAROON);
+           practiceButtonTextColor);
 
   DrawRectangleRounded(twoPlayerButtonRec, buttonRoundness, buttonSegments,
-                       GRAY);
+                       twoPlayerButtonColor);
   DrawText("Two Player Mode", twoPlayerButtonRec.x, twoPlayerButtonRec.y, 60,
-           MAROON);
+           twoPlayerButtonTextColor);
 }

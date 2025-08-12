@@ -8,8 +8,6 @@ static Rectangle table;
 
 static Circle pockets[TOTAL_POCKETS];
 
-Rectangle getTable() { return table; }
-
 void InitTable() {
   // TODO - change this to make sense
   table.x = GetScreenWidth() / 10.0f;
@@ -86,4 +84,30 @@ void DrawTable() {
   for (int i = 0; i < TOTAL_POCKETS; i++) {
     DrawCircle(pockets[i].x, pockets[i].y, pockets[i].radius, BLACK);
   }
+}
+
+Rectangle getTable() { return table; }
+
+Vector2 ResetBallAfterScratch(Ball b) {
+  Vector2 mousePos = GetMousePosition();
+  Rectangle resetBox = {
+      .x = table.x,
+      .y = table.y,
+      .width = table.width / 3,
+      .height = table.height,
+  };
+
+  Vector2 newPos = mousePos;
+  if (mousePos.x > resetBox.x + resetBox.width - b.radius) {
+    newPos.x = resetBox.x + resetBox.width - b.radius;
+  } else if (mousePos.x < resetBox.x + b.radius) {
+    newPos.x = resetBox.x + b.radius;
+  }
+  if (mousePos.y > resetBox.y + resetBox.height - b.radius) {
+    newPos.y = resetBox.y + resetBox.height - b.radius;
+  } else if (mousePos.y < resetBox.y + b.radius) {
+    newPos.y = resetBox.y + b.radius;
+  }
+
+  return newPos;
 }
