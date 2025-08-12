@@ -11,14 +11,15 @@ static Rectangle practiceButtonRec;
 static Color practiceButtonColor;
 static Color practiceButtonTextColor;
 
-static Rectangle twoPlayerButtonRec;
-static Color twoPlayerButtonColor;
-static Color twoPlayerButtonTextColor;
+static Rectangle local2PButtonRec;
+static Color local2PButtonColor;
+static Color local2PButtonTextColor;
 
 static Color buttonColors[2] = {GRAY, LIGHTGRAY};
 static Color textColors[2] = {MAROON, RED};
 
 Rectangle GetPracticeRec() { return practiceButtonRec; }
+Rectangle GetLocal2PRec() { return local2PButtonRec; }
 
 void InitMainMenu() {
   buttonWidth = (float)GetScreenWidth() / 3;
@@ -29,10 +30,10 @@ void InitMainMenu() {
   practiceButtonRec.width = buttonWidth;
   practiceButtonRec.height = buttonHeight;
 
-  twoPlayerButtonRec.x = ((float)GetScreenWidth() - buttonWidth) / 2;
-  twoPlayerButtonRec.y = ((float)GetScreenHeight() - buttonHeight) * 2 / 3;
-  twoPlayerButtonRec.width = buttonWidth;
-  twoPlayerButtonRec.height = buttonHeight;
+  local2PButtonRec.x = ((float)GetScreenWidth() - buttonWidth) / 2;
+  local2PButtonRec.y = ((float)GetScreenHeight() - buttonHeight) * 2 / 3;
+  local2PButtonRec.width = buttonWidth;
+  local2PButtonRec.height = buttonHeight;
 }
 
 void UpdateMainMenu() {
@@ -44,9 +45,9 @@ void UpdateMainMenu() {
   practiceButtonTextColor = textColors[practiceButtonSelected];
 
   bool twoPlayerButtonSelected =
-      CheckCollisionPointRec(mousePos, twoPlayerButtonRec);
-  twoPlayerButtonColor = buttonColors[twoPlayerButtonSelected];
-  twoPlayerButtonTextColor = textColors[twoPlayerButtonSelected];
+      CheckCollisionPointRec(mousePos, local2PButtonRec);
+  local2PButtonColor = buttonColors[twoPlayerButtonSelected];
+  local2PButtonTextColor = textColors[twoPlayerButtonSelected];
 }
 
 void DrawMainMenu() {
@@ -58,8 +59,8 @@ void DrawMainMenu() {
   DrawText("Practice Mode", practiceButtonRec.x, practiceButtonRec.y, 60,
            practiceButtonTextColor);
 
-  DrawRectangleRounded(twoPlayerButtonRec, buttonRoundness, buttonSegments,
-                       twoPlayerButtonColor);
-  DrawText("Two Player Mode", twoPlayerButtonRec.x, twoPlayerButtonRec.y, 60,
-           twoPlayerButtonTextColor);
+  DrawRectangleRounded(local2PButtonRec, buttonRoundness, buttonSegments,
+                       local2PButtonColor);
+  DrawText("Two Player Mode", local2PButtonRec.x, local2PButtonRec.y, 60,
+           local2PButtonTextColor);
 }

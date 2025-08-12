@@ -15,7 +15,7 @@ typedef struct {
   int radius;
 } Ball;
 
-typedef enum { Q, SOLID, STRIPE, EIGHT } BALL_TYPE;
+typedef enum { NONE, Q, SOLID, STRIPE, EIGHT } BALL_TYPE;
 
 void UpdateBallPosition(Ball *b, float deltaTime);
 void UpdateBallVelocity(Ball *b, float deltaTime);

@@ -1,4 +1,4 @@
-#include "practice.h"
+#include "local2p.h"
 #include "ball.h"
 #include "raylib.h"
 #include "table.h"
@@ -19,19 +19,23 @@ typedef enum {
   TURN_START,
   BALLS_IN_MOTION,
   SCRATCHED,
-} PracticeState;
+} Local2pState;
 
-static PracticeState state;
+static int currentPlayer = 0;
+static PlayerArray players[2] = {
+    (PlayerArray){.balls = {0}, .scored = 0, .assignedBallType = NONE},
+    (PlayerArray){.balls = {0}, .scored = 0, .assignedBallType = NONE}};
+
+static Local2pState state;
 static bool hasScratched;
 static bool canPlaceQ;
 static Vector2 mousePosition = {0};
 
-void InitPracticeScene() {
+void InitLocal2pScene() {
   hasScratched = false;
   canPlaceQ = true;
   mousePosition.x = 0;
   mousePosition.y = 0;
-
   state = TURN_START;
 
   InitTable();
@@ -61,7 +65,7 @@ void InitPracticeScene() {
   physics[0].position.y = table.y + table.height / 2;
 }
 
-void UpdatePracticeScene(float deltaTime) {
+void UpdateLocal2pScene(float deltaTime) {
   mousePosition = GetMousePosition();
   switch (state) {
   case TURN_START:
@@ -118,6 +122,7 @@ void UpdatePracticeScene(float deltaTime) {
     }
     if (allBallsStoppedMoving) {
       state = TURN_START;
+      currentPlayer = !currentPlayer;
       if (hasScratched) {
         state = SCRATCHED;
         onTable[0] = true;
@@ -146,7 +151,7 @@ void UpdatePracticeScene(float deltaTime) {
   }
 }
 
-void DrawPracticeScene() {
+void DrawLocal2pScene() {
   DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKBLUE);
   DrawTable();
 
@@ -166,7 +171,8 @@ void DrawPracticeScene() {
   }
 
   if (state == TURN_START || state == SCRATCHED) {
-    DrawText(TextFormat("PLAYER TURN"), 400, 40, 60, BLACK);
+    DrawText(TextFormat("PLAYER %i's TURN", currentPlayer + 1), 400, 40, 60,
+             !currentPlayer ? BLACK : RED);
   }
 
   for (int i = 0; i < MAX_BALLS; i++) {
@@ -175,5 +181,22 @@ void DrawPracticeScene() {
     }
     DrawBall(physics[i], types[i], colors[i]);
   }
+
+  Rectangle p1ScoreBox = {.x = (float)GetScreenWidth() / 8,
+                          .y = (float)GetScreenHeight() * 4 / 5,
+                          .width = 500,
+                          .height = 250};
+  DrawRectangleRec(p1ScoreBox, GRAY);
+  DrawText(TextFormat("Player 1: %i", players[0].scored), p1ScoreBox.x,
+           p1ScoreBox.y, 60, BLACK);
+
+  Rectangle p2ScoreBox = {.x = (float)GetScreenWidth() * 5 / 8,
+                          .y = (float)GetScreenHeight() * 4 / 5,
+                          .width = 500,
+                          .height = 250};
+  DrawRectangleRec(p2ScoreBox, GRAY);
+  DrawText(TextFormat("Player 2: %i", players[1].scored), p2ScoreBox.x,
+           p2ScoreBox.y, 60, BLACK);
+
   DrawFPS(10, 10);
 }

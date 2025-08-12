@@ -1,3 +1,4 @@
+#include "local2p.h"
 #include "mainmenu.h"
 #include "practice.h"
 #include "raylib.h"
@@ -6,7 +7,7 @@
 #define SCREENWIDTH 1800
 #define SCREENHEIGHT 1440
 
-typedef enum { START = 0, MAINMENU, PRACTICE } GameScene;
+typedef enum { START = 0, MAINMENU, PRACTICE, LOCAL2P } GameScene;
 
 static GameScene currentScene = START;
 static const int screenWidth = SCREENWIDTH;
@@ -27,10 +28,14 @@ void update() {
     break;
   case MAINMENU:
     UpdateMainMenu();
-    if (CheckCollisionPointRec(mousePos, GetPracticeRec()) &&
-        (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))) {
-      currentScene = PRACTICE;
-      InitPracticeScene();
+    if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP)) {
+      if (CheckCollisionPointRec(mousePos, GetPracticeRec())) {
+        currentScene = PRACTICE;
+        InitPracticeScene();
+      } else if (CheckCollisionPointRec(mousePos, GetLocal2PRec())) {
+        currentScene = LOCAL2P;
+        InitLocal2pScene();
+      }
     }
     break;
   case PRACTICE:
@@ -38,6 +43,9 @@ void update() {
       InitPracticeScene();
     }
     UpdatePracticeScene(deltaTime);
+    break;
+  case LOCAL2P:
+    UpdateLocal2pScene(deltaTime);
     break;
   }
 }
@@ -54,6 +62,9 @@ void draw() {
     break;
   case PRACTICE:
     DrawPracticeScene();
+    break;
+  case LOCAL2P:
+    DrawLocal2pScene();
     break;
   }
   EndDrawing();

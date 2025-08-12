@@ -5,3 +5,4 @@ void InitMainMenu();
 void UpdateMainMenu();
 void DrawMainMenu();
 Rectangle GetPracticeRec();
+Rectangle GetLocal2PRec();

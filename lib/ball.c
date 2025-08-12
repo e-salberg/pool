@@ -29,6 +29,9 @@ void DrawBall(Ball b, BALL_TYPE type, Color color) {
     Vector2 recPos = {b.position.x - (recSize.x / 2),
                       b.position.y - (recSize.y / 2)};
     DrawRectangleV(recPos, recSize, color);
+    break;
+  case NONE:
+    break;
   }
 }
 
