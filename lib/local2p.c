@@ -19,14 +19,14 @@ typedef enum {
   TURN_START,
   BALLS_IN_MOTION,
   SCRATCHED,
+  GAMEOVER,
 } Local2pState;
 
 static int currentPlayer = 0;
-static PlayerArray players[2] = {
-    (PlayerArray){.balls = {0}, .scored = 0, .assignedBallType = NONE},
-    (PlayerArray){.balls = {0}, .scored = 0, .assignedBallType = NONE}};
+static BALL_TYPE playerAssignedBallType[2] = {NONE, NONE};
 
 static Local2pState state;
+static bool playerScoredCorrectType;
 static bool hasScratched;
 static bool canPlaceQ;
 static Vector2 mousePosition = {0};
@@ -91,6 +91,19 @@ void UpdateLocal2pScene(float deltaTime) {
           physics[0].position.y = table.y + table.height / 2;
           physics[0].velocity.x = 0;
           physics[0].velocity.y = 0;
+        } else if (types[i] == EIGHT) {
+          // if current player has all other balls in hole they win
+          // else they lose
+          state = GAMEOVER;
+        } else {
+          if (playerAssignedBallType[currentPlayer] == NONE) {
+            playerAssignedBallType[currentPlayer] = types[i];
+            playerAssignedBallType[!currentPlayer] =
+                types[i] == SOLID ? STRIPE : SOLID;
+          }
+          if (playerAssignedBallType[currentPlayer] == types[i]) {
+            playerScoredCorrectType = true;
+          }
         }
       }
     }
@@ -122,11 +135,14 @@ void UpdateLocal2pScene(float deltaTime) {
     }
     if (allBallsStoppedMoving) {
       state = TURN_START;
-      currentPlayer = !currentPlayer;
       if (hasScratched) {
         state = SCRATCHED;
         onTable[0] = true;
+        currentPlayer = !currentPlayer;
+      } else if (!playerScoredCorrectType) {
+        currentPlayer = !currentPlayer;
       }
+      playerScoredCorrectType = false;
     }
     break;
   case SCRATCHED:
@@ -148,6 +164,8 @@ void UpdateLocal2pScene(float deltaTime) {
       hasScratched = false;
     }
     break;
+  case GAMEOVER:
+    break;
   }
 }
 
@@ -155,6 +173,53 @@ void DrawLocal2pScene() {
   DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), DARKBLUE);
   DrawTable();
 
+  for (int i = 0; i < MAX_BALLS; i++) {
+    if (!onTable[i]) {
+      continue;
+    }
+    DrawBall(physics[i], types[i], colors[i]);
+  }
+
+  Rectangle p1ScoreBox = {.x = (float)GetScreenWidth() / 8,
+                          .y = (float)GetScreenHeight() * 4 / 5,
+                          .width = 500,
+                          .height = 250};
+  Rectangle p2ScoreBox = {.x = (float)GetScreenWidth() * 5 / 8,
+                          .y = (float)GetScreenHeight() * 4 / 5,
+                          .width = 500,
+                          .height = 250};
+  DrawRectangleRec(p1ScoreBox, GRAY);
+  DrawRectangleRec(p2ScoreBox, GRAY);
+
+  int p1Score = 0;
+  int p2Score = 0;
+  for (int i = 0; i < MAX_BALLS; i++) {
+    if (types[i] == Q || types[i] == EIGHT || onTable[i]) {
+      continue;
+    }
+    // p1Score += types[i] == playerAssignedBallType[0];
+    // p2Score += types[i] == playerAssignedBallType[1];
+    if (types[i] == playerAssignedBallType[0]) {
+      p1Score++;
+      physics[i].position.x = p1ScoreBox.x + physics[i].radius +
+                              (2 * physics[i].radius * p1Score) + (5 * p1Score);
+      physics[i].position.y = p1ScoreBox.y + p1ScoreBox.height / 2;
+    } else {
+      p2Score++;
+      physics[i].position.x = p2ScoreBox.x + physics[i].radius +
+                              (2 * physics[i].radius * p2Score) + (5 * p2Score);
+      physics[i].position.y = p2ScoreBox.y + p2ScoreBox.height / 2;
+    }
+    DrawBall(physics[i], types[i], colors[i]);
+  }
+  Vector2 textOffset = {85, 15};
+  DrawText(TextFormat("Player 1: %i", p1Score), p1ScoreBox.x + textOffset.x,
+           p1ScoreBox.y + textOffset.y, 60, BLACK);
+  DrawText(TextFormat("Player 2: %i", p2Score), p2ScoreBox.x + textOffset.x,
+           p2ScoreBox.y + textOffset.y, 60, BLACK);
+
+  int currentPlayerScore = currentPlayer ? p2Score : p1Score;
+  int winner = currentPlayerScore == 7 ? currentPlayer : !currentPlayer;
   switch (state) {
   case TURN_START:
     DrawText(TextFormat("Start"), 10, 40, 40, BLACK);
@@ -168,35 +233,16 @@ void DrawLocal2pScene() {
       DrawText(TextFormat("CAN'T PLACE Q HERE"), 400, 100, 60, RED);
     }
     break;
+  case GAMEOVER:
+    DrawText(TextFormat("GAMEOVER"), 10, 40, 40, BLACK);
+    DrawText(TextFormat("Player %i Won!", winner + 1), 400, 100, 60, RED);
+    break;
   }
 
   if (state == TURN_START || state == SCRATCHED) {
     DrawText(TextFormat("PLAYER %i's TURN", currentPlayer + 1), 400, 40, 60,
              !currentPlayer ? BLACK : RED);
   }
-
-  for (int i = 0; i < MAX_BALLS; i++) {
-    if (!onTable[i]) {
-      continue;
-    }
-    DrawBall(physics[i], types[i], colors[i]);
-  }
-
-  Rectangle p1ScoreBox = {.x = (float)GetScreenWidth() / 8,
-                          .y = (float)GetScreenHeight() * 4 / 5,
-                          .width = 500,
-                          .height = 250};
-  DrawRectangleRec(p1ScoreBox, GRAY);
-  DrawText(TextFormat("Player 1: %i", players[0].scored), p1ScoreBox.x,
-           p1ScoreBox.y, 60, BLACK);
-
-  Rectangle p2ScoreBox = {.x = (float)GetScreenWidth() * 5 / 8,
-                          .y = (float)GetScreenHeight() * 4 / 5,
-                          .width = 500,
-                          .height = 250};
-  DrawRectangleRec(p2ScoreBox, GRAY);
-  DrawText(TextFormat("Player 2: %i", players[1].scored), p2ScoreBox.x,
-           p2ScoreBox.y, 60, BLACK);
 
   DrawFPS(10, 10);
 }

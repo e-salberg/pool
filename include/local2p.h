@@ -9,7 +9,7 @@
 
 typedef struct {
   int balls[TOTAL_PLAYER_BALLS];
-  int scored;
+  int score;
   BALL_TYPE assignedBallType;
 } PlayerArray;
 

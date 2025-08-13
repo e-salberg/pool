@@ -19,6 +19,7 @@ static Color buttonColors[2] = {GRAY, LIGHTGRAY};
 static Color textColors[2] = {MAROON, RED};
 
 Rectangle GetPracticeRec() { return practiceButtonRec; }
+
 Rectangle GetLocal2PRec() { return local2PButtonRec; }
 
 void InitMainMenu() {
