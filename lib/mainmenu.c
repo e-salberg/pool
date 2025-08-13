@@ -57,11 +57,14 @@ void DrawMainMenu() {
 
   DrawRectangleRounded(practiceButtonRec, buttonRoundness, buttonSegments,
                        practiceButtonColor);
-  DrawText("Practice Mode", practiceButtonRec.x, practiceButtonRec.y, 60,
+
+  DrawText("Practice Mode", practiceButtonRec.x + 80,
+           practiceButtonRec.y + (practiceButtonRec.height / 2) - 30, 60,
            practiceButtonTextColor);
 
   DrawRectangleRounded(local2PButtonRec, buttonRoundness, buttonSegments,
                        local2PButtonColor);
-  DrawText("Two Player Mode", local2PButtonRec.x, local2PButtonRec.y, 60,
+  DrawText("Two Player Mode", local2PButtonRec.x + 35,
+           local2PButtonRec.y + (local2PButtonRec.height / 2) - 30, 60,
            local2PButtonTextColor);
 }
